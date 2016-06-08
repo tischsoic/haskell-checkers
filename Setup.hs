@@ -1,2 +1,6 @@
 import Distribution.Simple
-main = defaultMain
+
+main = do
+    print "aasdasdassd"
+    asdf <- readLn
+    return "www"
