@@ -15,9 +15,11 @@ import Control.Monad
 -- import Board
 import Board
 
+
 main :: IO ()
 main = do
     word <- getLine
     print getDumbText
     print $ DataBox 12 "as"
+    print $ DataBox (Just 2) "asd"
     print word
