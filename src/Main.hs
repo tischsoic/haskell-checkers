@@ -11,9 +11,9 @@ import CheckersManager
 
 main :: IO ()
 main = do
-    putStrLn someText
     let board1 = Board.getInitialBoard
         board2 =
             Board.setBoardField (Board.Position (1, 5)) Board.White board1
     putStrLn $ Board.boardToString board2
+    print $ parseMove "11-15"
     print $ Board.getBoardField (Board.Position (1, 5)) board2
