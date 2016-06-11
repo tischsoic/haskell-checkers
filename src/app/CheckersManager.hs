@@ -1,5 +1,6 @@
 module CheckersManager(
-    parseMove
+    parseMove,
+    doMove
 ) where
 
 import Data.List
@@ -39,7 +40,42 @@ fromStandarisedPositionToPosition position =
         xBase = positionBase `div` 4
         yBase = positionBase `mod` 4
         x = xBase + 1
-        xIsOdd = odd x
-    in  if xIsOdd
+    in  if odd x
         then Board.Position (x, yBase * 2 + 2)
         else Board.Position (x, yBase * 2 + 1)
+
+doMove :: Move -> Board.PieceColor -> Board.Board -> Board.Board
+doMove move@(SimpleMove _) = doSimpleMove move
+doMove move@(KillMove _) = doKillMove move
+
+doKillMove :: Move -> Board.PieceColor -> Board.Board -> Board.Board
+doKillMove (KillMove killMovesList) color board =
+    let killMovesZipped = zip killMovesList $ drop 1 killMovesList
+    in foldl (\board (fstPos, sndPos)
+                -> doSingleKillMove fstPos sndPos color board)
+        board killMovesZipped
+
+doSingleKillMove :: Board.Position -> Board.Position
+    -> Board.PieceColor -> Board.Board -> Board.Board
+doSingleKillMove fstPos sndPos color board =
+    let positionBetween = getFieldBetweenTwoPosition fstPos sndPos
+        boardWithFstRemoved
+            = Board.setBoardField fstPos Board.None board
+        boardWithFstAndBetweenRemoved
+            = Board.setBoardField positionBetween Board.None boardWithFstRemoved
+        finalBoard
+            = Board.setBoardField sndPos color boardWithFstAndBetweenRemoved
+    in finalBoard
+
+getFieldBetweenTwoPosition :: Board.Position -> Board.Position -> Board.Position
+getFieldBetweenTwoPosition
+    (Board.Position (fstPosX, fstPosY)) (Board.Position (sndPosX, sndPosY)) =
+    let x = (fstPosX + sndPosX) `div` 2
+        y = (fstPosY + sndPosY) `div` 2
+    in Board.Position (x, y)
+
+doSimpleMove :: Move -> Board.PieceColor -> Board.Board -> Board.Board
+doSimpleMove (SimpleMove (beginningPosition, endPosition)) color board =
+    let boardWithUnsetPrevious =
+            Board.setBoardField beginningPosition Board.None board
+    in Board.setBoardField endPosition color boardWithUnsetPrevious

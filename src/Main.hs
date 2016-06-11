@@ -11,9 +11,18 @@ import CheckersManager
 
 main :: IO ()
 main = do
-    let board1 = Board.getInitialBoard
-        board2 =
-            Board.setBoardField (Board.Position (1, 5)) Board.White board1
-    putStrLn $ Board.boardToString board2
-    print $ parseMove "11-15"
-    print $ Board.getBoardField (Board.Position (1, 5)) board2
+    let initialBoard = Board.getInitialBoard
+    managePlay Board.Black initialBoard
+
+managePlay :: Board.PieceColor -> Board.Board -> IO ()
+managePlay color board = do
+    moveStr <- getLine
+    let move = parseMove moveStr
+        changedBoard = doMove move color board
+    putStrLn $ Board.boardToString changedBoard
+    managePlay (getOppositeColor color) changedBoard
+
+getOppositeColor :: Board.PieceColor -> Board.PieceColor
+getOppositeColor color
+    | color == Board.White = Board.Black
+    | color == Board.Black = Board.White
