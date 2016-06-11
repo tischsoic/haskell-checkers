@@ -1,24 +1,20 @@
 module Board(
-    DataBox(..),
     Position(..),
-    Board(..),
-    boardToString,
-    getInitialBoard,
-    getDumbText
+    Board,
+    PieceColor,
+    toString,
+    getInitialBoard
 ) where
 
 import Data.List
-
-getDumbText = "Asdf is not dumb text!"
-
-data DataBox a = DataBox a String
-    deriving (Read, Eq, Show)
 
 data Position = Position (Int, Int)
     deriving(Read, Eq, Show)
 
 data Board = Board [Position] [Position]
     deriving(Read, Eq, Show)
+
+data PieceColor = White | Black | None
 
 getInitialBoard :: Board
 getInitialBoard = Board
@@ -33,8 +29,8 @@ getInitialBoard = Board
 getEmptyBoardString :: [String]
 getEmptyBoardString = replicate 8 $ replicate 8 '.'
 
-boardToString :: Board -> String
-boardToString board =
+toString :: Board -> String
+toString board =
     let boardAsStringList = boardTotSringList board
     in intercalate "\n" boardAsStringList
 
@@ -55,14 +51,3 @@ boardTotSringList (Board whitePositions blackPositions) =
 replaceAtIndex :: Int -> a -> [a] -> [a]
 replaceAtIndex n item ls = a ++ (item:b)
     where (a, (_:b)) = splitAt n ls
-
-
--- getBoardPositionAsString :: Board -> Position -> String
--- getBoardPositionAsString
---     (Board whitePositions balckPositions)
---     position =
---     | not inWhite && not inBlack = '.'
---     | inWhite = 'w'
---     | inBlack = 'b'
---     where inWhite = elem position whitePositions
---         inBlack = elem position blackPositions
