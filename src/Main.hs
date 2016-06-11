@@ -14,6 +14,7 @@ import Control.Monad
 
 -- import Board
 import Board
+import CheckersManager
 
 
 main :: IO ()
@@ -23,3 +24,5 @@ main = do
     print $ DataBox 12 "as"
     print $ DataBox (Just 2) "asd"
     print word
+    putStrLn someText
+    putStrLn $ boardToString getInitialBoard
