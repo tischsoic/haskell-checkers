@@ -12,4 +12,8 @@ import CheckersManager
 main :: IO ()
 main = do
     putStrLn someText
-    putStrLn $ Board.toString Board.getInitialBoard
+    let board1 = Board.getInitialBoard
+        board2 =
+            Board.setBoardField (Board.Position (1, 5)) Board.White board1
+    putStrLn $ Board.boardToString board2
+    print $ Board.getBoardField (Board.Position (1, 5)) board2

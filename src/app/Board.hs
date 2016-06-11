@@ -1,9 +1,11 @@
 module Board(
     Position(..),
+    PieceColor(..),
     Board,
-    PieceColor,
-    toString,
-    getInitialBoard
+    boardToString,
+    getInitialBoard,
+    setBoardField,
+    getBoardField
 ) where
 
 import Data.List
@@ -11,42 +13,50 @@ import Data.List
 data Position = Position (Int, Int)
     deriving(Read, Eq, Show)
 
-data Board = Board [Position] [Position]
+data PieceColor = White | Black | None | Blocked
     deriving(Read, Eq, Show)
 
-data PieceColor = White | Black | None
+data Board = Board [[PieceColor]]
+    deriving(Read, Eq, Show)
 
 getInitialBoard :: Board
 getInitialBoard = Board
-    [Position (1, 1), Position (3, 1), Position (5, 1), Position (7, 1),
-    Position (2, 2), Position (4, 2), Position (6, 2), Position (8, 2),
-    Position (1, 3), Position (3, 3), Position (5, 3), Position (7, 3)]
+    [
+        [Blocked, Black, Blocked, Black, Blocked, Black, Blocked, Black],
+        [Black, Blocked, Black, Blocked, Black, Blocked, Black, Blocked],
+        [Blocked, Black, Blocked, Black, Blocked, Black, Blocked, Black],
+        [None, Blocked, None, Blocked, None, Blocked, None, Blocked],
+        [Blocked, None, Blocked, None, Blocked, None, Blocked, None],
+        [White, Blocked, White, Blocked, White, Blocked, White, Blocked],
+        [Blocked, White, Blocked, White, Blocked, White, Blocked, White],
+        [White, Blocked, White, Blocked, White, Blocked, White, Blocked]
+    ]
 
-    [Position (1, 6), Position (3, 6), Position (5, 6), Position (7, 6),
-    Position (2, 7), Position (4, 7), Position (6, 7), Position (8, 7),
-    Position (1, 8), Position (3, 8), Position (5, 8), Position (7, 8)]
+pieceColorToChar :: PieceColor -> Char
+pieceColorToChar White = 'w'
+pieceColorToChar Black = 'b'
+pieceColorToChar None = '.'
+pieceColorToChar Blocked = '.'
 
-getEmptyBoardString :: [String]
-getEmptyBoardString = replicate 8 $ replicate 8 '.'
+boardToString :: Board -> String
+boardToString (Board list) =
+    take (9 * 8 - 1) $ foldr (\row acc -> boardRowToString row ++ '\n' : acc) "" list
 
-toString :: Board -> String
-toString board =
-    let boardAsStringList = boardTotSringList board
-    in intercalate "\n" boardAsStringList
+boardRowToString :: [PieceColor] -> String
+boardRowToString =
+    foldr (\field acc -> pieceColorToChar field : acc) ""
 
-boardTotSringList :: Board -> [String]
-boardTotSringList (Board whitePositions blackPositions) =
-    let emptyBoardString = getEmptyBoardString
-        boardWithWhiteOnIt
-            = foldl (\acc (Position (x, y))
-                        -> replaceAtIndex (y - 1) (replaceAtIndex (x - 1) 'w' (acc !! (y - 1))) acc)
-                emptyBoardString whitePositions
-        boardWithWhiteAndBlackOnIt
-            = foldl (\acc (Position (x, y))
-                        -> replaceAtIndex (y - 1) (replaceAtIndex (x - 1) 'b' (acc !! (y - 1))) acc)
-                boardWithWhiteOnIt blackPositions
-    in boardWithWhiteAndBlackOnIt
+setBoardField :: Position -> PieceColor -> Board -> Board
+setBoardField (Position (x, y)) color (Board listOfFields) =
+    Board (replaceInListOfLists (x - 1) (y - 1) color listOfFields)
 
+getBoardField :: Position -> Board -> PieceColor
+getBoardField (Position (x, y)) (Board listOfFields) =
+    (listOfFields !! (x - 1)) !! (y - 1)
+
+replaceInListOfLists :: Int -> Int -> a -> [[a]] -> [[a]]
+replaceInListOfLists x y item ls
+    = replaceAtIndex x (replaceAtIndex y item (ls !! x)) ls
 
 replaceAtIndex :: Int -> a -> [a] -> [a]
 replaceAtIndex n item ls = a ++ (item:b)
