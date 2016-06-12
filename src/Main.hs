@@ -16,11 +16,19 @@ main = do
 
 managePlay :: Board.PieceColor -> Board.Board -> IO ()
 managePlay color board = do
+    let colorStr = show color
+    putStrLn ("Current move by: " ++ colorStr)
     moveStr <- getLine
     let move = parseMove moveStr
-        changedBoard = doMove move color board
+        MoveBox {
+            board = changedBoard,
+            success = s,
+            info = i } = doMove move color board
     putStrLn $ Board.boardToString changedBoard
-    managePlay (getOppositeColor color) changedBoard
+    putStrLn ("Info: " ++ i)
+    if s
+    then managePlay (getOppositeColor color) changedBoard
+    else managePlay color changedBoard
 
 getOppositeColor :: Board.PieceColor -> Board.PieceColor
 getOppositeColor color

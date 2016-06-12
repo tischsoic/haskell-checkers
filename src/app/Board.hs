@@ -13,8 +13,17 @@ import Data.List
 data Position = Position (Int, Int)
     deriving(Read, Eq, Show)
 
-data PieceColor = White | Black | None | Blocked
+data PieceColor = White | WhiteQueen
+                | Black | BlackQueen
+                | None | Blocked
     deriving(Read, Eq, Show)
+
+-- --------------------------------------------------
+-- Probably better solution would be to have
+-- data PieceColor = White | Black | None | Blocked
+--
+-- data Piece = Pawn PieceColor | Queen PieceColor
+-- --------------------------------------------------
 
 data Board = Board [[PieceColor]]
     deriving(Read, Eq, Show)
@@ -34,7 +43,9 @@ getInitialBoard = Board
 
 pieceColorToChar :: PieceColor -> Char
 pieceColorToChar White = 'w'
+pieceColorToChar WhiteQueen = 'W'
 pieceColorToChar Black = 'b'
+pieceColorToChar BlackQueen = 'B'
 pieceColorToChar None = '.'
 pieceColorToChar Blocked = '.'
 
@@ -50,9 +61,11 @@ setBoardField :: Position -> PieceColor -> Board -> Board
 setBoardField (Position (x, y)) color (Board listOfFields) =
     Board (replaceInListOfLists (x - 1) (y - 1) color listOfFields)
 
-getBoardField :: Position -> Board -> PieceColor
+getBoardField :: Position -> Board -> Maybe PieceColor
 getBoardField (Position (x, y)) (Board listOfFields) =
-    (listOfFields !! (x - 1)) !! (y - 1)
+    if x < 1 || x > 8 || y < 1 || y > 8
+    then Nothing
+    else Just $ (listOfFields !! (x - 1)) !! (y - 1)
 
 replaceInListOfLists :: Int -> Int -> a -> [[a]] -> [[a]]
 replaceInListOfLists x y item ls
